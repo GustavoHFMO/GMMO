@@ -83,7 +83,6 @@ for i in range(0, 7):
         
         # choosing the dataset
         name, labels, stream_records = chooseDataset(i, j)
-        stream_records = stream_records[:450]
         
         # table to store only the accuracy of models        
         if(j == 0):
@@ -101,8 +100,6 @@ for i in range(0, 7):
         for k in range(len(train_size)):
         
             ################################################################################## 0 #######################################################
-            xxx += 1
-                
             #1. import the classifier
             classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=False, kmax=Kmax_estatico)
             classifier.NAME = "train_size"+str(train_size[k])+"-kmax"+str(Kmax_estatico)
@@ -124,16 +121,14 @@ for i in range(0, 7):
             
             #5. storing the information
             saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
+            
+            xxx += 1
             ############################################################################################################################################
-        
-        xxx += 1
         
         # analise de sensitividade sobre o kmax
         for k in range(len(Kmax)):
         
             ################################################################################## 0 #######################################################
-            xxx += 1
-                
             #1. import the classifier
             classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=False, kmax=Kmax[k])
             classifier.NAME = "train_size"+str(train_size_estatico)+"-kmax"+str(Kmax[k])
@@ -155,4 +150,6 @@ for i in range(0, 7):
             
             #5. storing the information
             saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
+            
+            xxx += 1
             ############################################################################################################################################
