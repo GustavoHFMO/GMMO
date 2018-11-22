@@ -83,7 +83,8 @@ for i in range(0, 7):
         
         # choosing the dataset
         name, labels, stream_records = chooseDataset(i, j)
-
+        stream_records = stream_records[:450]
+        
         # table to store only the accuracy of models        
         if(j == 0):
             tb_accuracy = Tabela_excel()
@@ -97,10 +98,10 @@ for i in range(0, 7):
         xxx = 0
         
         # analise de sensitividade sobre o tamanho do treinamento
-        for k in range(0, len(train_size)):
+        for k in range(len(train_size)):
         
             ################################################################################## 0 #######################################################
-            xxx += k
+            xxx += 1
                 
             #1. import the classifier
             classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=False, kmax=Kmax_estatico)
@@ -124,15 +125,14 @@ for i in range(0, 7):
             #5. storing the information
             saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
             ############################################################################################################################################
-            
         
         xxx += 1
         
         # analise de sensitividade sobre o kmax
-        for k in range(0, len(Kmax)):
+        for k in range(len(Kmax)):
         
             ################################################################################## 0 #######################################################
-            xxx += k
+            xxx += 1
                 
             #1. import the classifier
             classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=False, kmax=Kmax[k])
