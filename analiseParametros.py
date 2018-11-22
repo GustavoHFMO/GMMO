@@ -70,10 +70,10 @@ Kmax = [1, 3, 7, 9]
 # nomes dos modelos gerados
 models = []
 for k in range(len(train_size)):
-    nome = "train_size:"+str(train_size[k])+"-kmax:"+str(Kmax_estatico)
+    nome = "train_size"+str(train_size[k])+"-kmax"+str(Kmax_estatico)
     models.append(nome)
 for k in range(len(Kmax)):
-    nome = "train_size:"+str(train_size_estatico)+"-kmax:"+str(Kmax[k])
+    nome = "train_size"+str(train_size_estatico)+"-kmax"+str(Kmax[k])
     models.append(nome)
 
 
@@ -104,7 +104,7 @@ for i in range(0, 7):
                 
             #1. import the classifier
             classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=False, kmax=Kmax_estatico)
-            classifier.NAME = "train_size:"+str(train_size[k])+"-kmax:"+str(Kmax_estatico)
+            classifier.NAME = "train_size"+str(train_size[k])+"-kmax"+str(Kmax_estatico)
             
             #2. instantiate the detector
             detector = EWMA(min_instance=train_size[k], lt=lt)
@@ -126,6 +126,8 @@ for i in range(0, 7):
             ############################################################################################################################################
             
         
+        xxx += 1
+        
         # analise de sensitividade sobre o kmax
         for k in range(0, len(Kmax)):
         
@@ -134,7 +136,7 @@ for i in range(0, 7):
                 
             #1. import the classifier
             classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=False, kmax=Kmax[k])
-            classifier.NAME = "train_size:"+str(train_size_estatico)+"-kmax:"+str(Kmax[k])
+            classifier.NAME = "train_size"+str(train_size_estatico)+"-kmax"+str(Kmax[k])
             
             #2. instantiate the detector
             detector = EWMA(min_instance=train_size_estatico, lt=lt)
