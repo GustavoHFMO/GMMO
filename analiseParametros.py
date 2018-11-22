@@ -97,7 +97,7 @@ for i in range(0, 7):
         xxx = 0
         
         # analise de sensitividade sobre o tamanho do treinamento
-        for k in range(len(train_size)):
+        for k in range(0, len(train_size)):
         
             ################################################################################## 0 #######################################################
             xxx += k
@@ -127,7 +127,7 @@ for i in range(0, 7):
             
         
         # analise de sensitividade sobre o kmax
-        for k in range(len(Kmax)):
+        for k in range(0, len(Kmax)):
         
             ################################################################################## 0 #######################################################
             xxx += k
