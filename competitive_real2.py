@@ -80,7 +80,7 @@ train_size = 50
 lt = 1
 patch = "projects/real/"
 
-for i in range(7, 8):
+for i in range(8, 9):
     
     for j in range(1):
         
