@@ -78,7 +78,7 @@ models = ['Proposed Method', 'IGMM-CD', 'Dynse-priori']
 m = 100
 train_size = 50
 lt = 1
-patch = "projects/new/"
+patch = "projects/real/"
 
 for i in range(6, 8):
     
