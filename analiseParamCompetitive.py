@@ -11,6 +11,8 @@ from competitive_algorithms.Dynse import ClassificationEngine
 from competitive_algorithms.Dynse import Dynse
 from sklearn.naive_bayes import GaussianNB
 import pandas as pd
+import warnings
+warnings.simplefilter("ignore", UserWarning)
 
 def chooseDataset(number, variation):
     if(number==0):
