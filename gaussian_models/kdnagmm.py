@@ -134,6 +134,9 @@ class KDNAGMM(GMM_SUPER):
          
         # creating the optimal gaussians for each class
         for i in range(len(classes)):
+
+            print(classes[i])            
+            print("quantidade: ", ammount[i])
             
             if(ammount[i] != 0):
                 # EM with BIC applied for each class
