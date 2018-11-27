@@ -130,8 +130,11 @@ class ClassificationEngine:
             DS = APriori(P, k)
             
         # encontrando os classificadores competentes do DS escolhido
-        self.DS = copy.deepcopy(DS)            
-        self.DS.fit(x_sel, y_sel)
+        self.DS = copy.deepcopy(DS) 
+        try:           
+            self.DS.fit(x_sel, y_sel)
+        except:
+            continue
         
     def predict(self, x):
         '''
@@ -353,10 +356,7 @@ class Dynse(PREQUENTIAL_SUPER):
                 self.CE.fit(x_sel, y_sel, P, self.K)
                 
                 # realizando a classificacao
-                try:
-                    y_pred = self.CE.predict(np.asarray([x]))
-                except:
-                    y_pred = None
+                y_pred = self.CE.predict(np.asarray([x]))
                     
                 # salvando a previsao e o alvo
                 self.PREDICTIONS.append(y_pred[0])
