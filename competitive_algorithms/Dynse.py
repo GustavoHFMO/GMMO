@@ -129,12 +129,13 @@ class ClassificationEngine:
         elif(self.TYPE=='priori'):
             DS = APriori(P, k)
             
+        old = copy.deepcopy(self.DS)
         # encontrando os classificadores competentes do DS escolhido
         try:
             self.DS = copy.deepcopy(DS)           
             self.DS.fit(x_sel, y_sel)
         except:
-            print()
+            self.DS = copy.deepcopy(old)
         
     def predict(self, x):
         '''
