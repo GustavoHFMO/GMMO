@@ -95,6 +95,7 @@ for i in range(8, 9):
                                          cabecalho=models, 
                                          largura_col=5000)
             
+        '''
         ################################################################################## 0 #######################################################
         # Proposed 
         xxx = 0
@@ -120,13 +121,13 @@ for i in range(8, 9):
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
         ############################################################################################################################################
-        
+            
         ################################################################################## 1 #######################################################
         # IGMM-CD
         xxx = 1
             
         #1. import the classifier
-        igmmcd = IGMMCD(0.5, 0.01, 5)
+        igmmcd = IGMMCD(0.5, 0.01, 13)
         
         #2. execute the prequential
         igmmcd.prequential(labels, stream_records, train_size)
@@ -134,7 +135,8 @@ for i in range(8, 9):
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, igmmcd.returnPredictions(), igmmcd.returnTarget(), igmmcd.accuracyGeneral())
         ############################################################################################################################################
-    
+        '''
+            
         ################################################################################## 2 #######################################################
         # Dynse
         xxx = 2

@@ -474,9 +474,10 @@ def main():
     dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes']
     
     #1. import the stream
-    labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+"/"+dataset[i]+"_"+str(0)+".arff")
+    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+"/"+dataset[i]+"_"+str(0)+".arff")
+    labels, _, stream_records = ARFFReader.read("../data_streams/real/PAKDD.arff")
     
-    igmmcd = IGMMCD(1, 0.01, 13)
+    igmmcd = IGMMCD(0.5, 0.01, 13)
     igmmcd.prequential(labels, stream_records, 50)
     
     # printing the final accuracy

@@ -353,7 +353,10 @@ class Dynse(PREQUENTIAL_SUPER):
                 self.CE.fit(x_sel, y_sel, P, self.K)
                 
                 # realizando a classificacao
-                y_pred = self.CE.predict(np.asarray([x]))
+                try:
+                    y_pred = self.CE.predict(np.asarray([x]))
+                except:
+                    y_pred = None
                     
                 # salvando a previsao e o alvo
                 self.PREDICTIONS.append(y_pred[0])
@@ -389,7 +392,7 @@ def main():
     datasets = ['SEA', 'SEARec', 'STAGGER']
     
     # definindo o mecanismo de classificacao
-    j = 0
+    j = 5
     engines = ['knorae', 'knorau', 'ola', 'lca', 'posteriori', 'priori']
     
     # defininindo o mecanismo de poda
@@ -397,8 +400,11 @@ def main():
     pruning = ['age', 'accuracy']
     
     #1. importando o dataset
-    labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/circles.arff")
+    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/circles.arff")
     #labels, _, stream_records = ARFFReader.read("../data_streams/Dynse/"+datasets[i]+".arff")
+    #labels, _, stream_records = ARFFReader.read("../data_streams/real/PAKDD.arff")
+    labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/circles/circles_"+str(0)+".arff")
+    
     
     #2. instanciando o mecanismo de classificacao
     ce = ClassificationEngine(engines[j])
@@ -421,7 +427,7 @@ def main():
     #6. executando o framework
     dynse.prequential(labels=labels, 
                       stream=stream_records, 
-                      window_size=300,
+                      window_size=100,
                       train_size=50)
     
     # printando a acuracia final do sistema
