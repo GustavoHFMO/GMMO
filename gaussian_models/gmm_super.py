@@ -252,8 +252,6 @@ class GMM_SUPER:
         :return: the best gmm model
         '''
         
-        print(train_input)
-        
         # creating the first gaussian
         gmm = copy.deepcopy(self)
         gmm.fitClustering(train_input, 1)

@@ -115,12 +115,10 @@ class KDNAGMM(GMM_SUPER):
         # receiving the number of classes
         unique, ammount = np.unique(self.train_target, return_counts=True)
         self.L = len(unique)
-        print(self.train_target)
-        print(unique)
             
         # dividing the patterns per class
         classes = []
-        for i in range(self.L):
+        for i in unique:
             aux = []
             for j in range(len(self.train_target)):
                 if(self.train_target[j] == i):
@@ -137,11 +135,6 @@ class KDNAGMM(GMM_SUPER):
         # creating the optimal gaussians for each class
         for i in range(len(classes)):
 
-            print(classes)
-            print(classes[i])
-            print("quantidade: ", ammount)            
-            print("quantidade: ", ammount[i])
-            
             if(ammount[i] != 0):
                 # EM with BIC applied for each class
                 gmm = self.chooseBestModel(classes[i], type_selection, Kmax, restarts, iterations)
