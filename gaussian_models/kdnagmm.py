@@ -183,9 +183,8 @@ class KDNAGMM(GMM_SUPER):
         condition = False
         if(self.erro and y_true != y_pred):
             condition = True
-        else:
-            if(i % 5 == 0):
-                condition = True
+        elif(i % 5 == 0):
+            condition = True
             
         if(condition):
             
