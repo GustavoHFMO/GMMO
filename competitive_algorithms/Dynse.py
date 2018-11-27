@@ -163,10 +163,6 @@ class Dynse(PREQUENTIAL_SUPER):
         self.PREDICTIONS = []
         self.TARGET = []
         self.NAME = "Dynse-"+self.CE.TYPE+"-"+self.PE.TYPE
-        
-        # to correct possible problems with DS lib
-        self.old_x_sel = []
-        self.old_y_sel = []
     
     def adjustingWindowBatch(self, W):
         '''
@@ -352,12 +348,17 @@ class Dynse(PREQUENTIAL_SUPER):
                 
                 # ajustando a janela de validacao
                 x_sel, y_sel = self.adjustingWindowOne(W)
-                
-                # ajustando o mecanismo de classificacao
+                        
                 try:
+                    # ajustando o mecanismo de classificacao
                     self.CE.fit(x_sel, y_sel, P, self.K)
                 except:
-                    self.CE.fit(self.old_x_sel, self.old_y_sel, P, self.K)
+                    # to avoid problems with deslib
+                    unique = np.unique(y_sel)
+                    labels = np.unique(self.STREAM[:,-1])
+                    index = [i for i in labels if(i not in unique)] 
+                    y_sel[0] = index[0]
+                    self.CE.fit(x_sel, y_sel, P, self.K)
                 
                 # realizando a classificacao
                 y_pred = self.CE.predict(np.asarray([x]))
@@ -377,9 +378,6 @@ class Dynse(PREQUENTIAL_SUPER):
                         
                 # removendo o batch mais antigo 
                 self.removeOldestBatch(W)
-                
-                # to avoid future problems
-                self.old_x_sel, self.old_y_sel = x_sel, y_sel
                 
             else:
                 # treinando um classificador 
