@@ -318,7 +318,7 @@ class GMM_SUPER:
             plt.scatter(classes[i][:,0],
                         classes[i][:,1],
                         color = colors[i],
-                        marker = marks[i],
+                        #marker = marks[i],
                         label = 'class '+str(i)) 
             
         # plotting the gaussians under the dataset

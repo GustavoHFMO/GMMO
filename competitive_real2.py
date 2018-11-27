@@ -100,7 +100,7 @@ for i in range(8, 9):
         xxx = 0
             
         #1. import the classifier
-        classifier = KDNAGMM(ruido=False, remocao=True, adicao=True, erro=False)
+        classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=False)
         
         #2. instantiate the detector
         detector = EWMA(min_instance=train_size, lt=lt)
