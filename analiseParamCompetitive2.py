@@ -112,7 +112,7 @@ for i in range(4, 7):
             bc = GaussianNB()
             
             #4. instanciando o framework
-            g = Dynse(D=25,
+            dynse = Dynse(D=25,
                       M=4, 
                       K=5, 
                       CE=ce, 
@@ -120,14 +120,14 @@ for i in range(4, 7):
                       BC=bc)
              
             #5. executando o framework
-            g.prequential(labels=labels, 
+            dynse.prequential(labels=labels, 
                               stream=stream_records, 
                               window_size=100,
                               train_size=train_size[k])
 
             
             #5. storing the information
-            saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
+            saveInformation(j, xxx, models, name, tb_accuracy, dynse.returnPredictions(), dynse.returnTarget(), dynse.accuracyGeneral())
             
             xxx += 1
             ############################################################################################################################################
@@ -137,13 +137,13 @@ for i in range(4, 7):
         
             ################################################################################## 0 #######################################################
             #1. import the classifier
-            g = IGMMCD(0.5, 0.01, Kmax[k])
+            igmmcd = IGMMCD(0.5, 0.01, Kmax[k])
             
             #2. execute the prequential
-            g.prequential(labels, stream_records, train_size_estatico)
+            igmmcd.prequential(labels, stream_records, train_size_estatico)
             
             #5. storing the information
-            saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
+            saveInformation(j, xxx, models, name, tb_accuracy, igmmcd.returnPredictions(), igmmcd.returnTarget(), igmmcd.accuracyGeneral())
             
             xxx += 1
             ############################################################################################################################################
