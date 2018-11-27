@@ -12,7 +12,7 @@ from competitive_algorithms.Dynse import Dynse
 from sklearn.naive_bayes import GaussianNB
 import pandas as pd
 import warnings
-warnings.simplefilter("ignore", UserWarning)
+warnings.simplefilter("ignore")
 
 def chooseDataset(number, variation):
     if(number==0):
