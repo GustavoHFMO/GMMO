@@ -136,7 +136,8 @@ class KDNAGMM(GMM_SUPER):
         for i in range(len(classes)):
 
             print(classes)
-            print(classes[i])            
+            print(classes[i])
+            print("quantidade: ", ammount)            
             print("quantidade: ", ammount[i])
             
             if(len(classes) != 0):
