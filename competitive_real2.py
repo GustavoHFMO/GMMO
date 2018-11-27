@@ -111,7 +111,7 @@ for i in range(8, 9):
                         stream=stream_records,
                         classifier=classifier,
                         detector=detector,
-                        strategy=True,
+                        strategy=False,
                         window_size=train_size)
         
         #4. execute the prequential
