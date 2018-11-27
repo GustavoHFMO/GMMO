@@ -60,8 +60,11 @@ class GMM_SUPER:
                 
         # defining the quantity of parameters of model
         self.n = len(self.train_input)
+        print(self.train_input)
+        print(self.n)
         # defining the dimension of problem
         d = len(self.train_input[0])
+        
         # quantity of means, covariances and constants of mixtures
         self.p = (self.K * d) + (self.K * d * d) + self.K
             

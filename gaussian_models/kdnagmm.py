@@ -126,23 +126,18 @@ class KDNAGMM(GMM_SUPER):
         # creating the optimal gaussians for each class
         for i in range(len(classes)):
             
-            if(len(classes[i]) > 1):
-            
-                # EM with BIC applied for each class
-                gmm = self.chooseBestModel(classes[i], type_selection, Kmax, restarts, iterations)
+            # EM with BIC applied for each class
+            gmm = self.chooseBestModel(classes[i], type_selection, Kmax, restarts, iterations)
     
-                # storing the gaussians            
-                for gaussian in gmm.gaussians:
-                    gaussian.label = i 
-                    self.gaussians.append(gaussian)
+            # storing the gaussians            
+            for gaussian in gmm.gaussians:
+                gaussian.label = i 
+                self.gaussians.append(gaussian)
                     
-                # storing the density of each gaussian
-                for k in gmm.dens:
-                    self.dens.append(k)
+            # storing the density of each gaussian
+            for k in gmm.dens:
+                self.dens.append(k)
                     
-            else:
-                continue    
-        
         # defining the number of gaussians for the problem
         self.K = len(self.gaussians)
         
@@ -174,11 +169,11 @@ class KDNAGMM(GMM_SUPER):
         '''
         
         condition = False
-        if(self.erro):
+        if(self.erro and y_true != y_pred):
+            condition = True
+        else:
             if(i % 5 == 0):
                 condition = True
-        elif(y_true != y_pred):
-            condition = True
             
         if(condition):
             
@@ -428,7 +423,6 @@ def main():
     # plotting the gmm created
     gmm.plotGmmTrainTest(gmm, train_accuracy, test_accuracy)
     ############################################################################################
-    
     
 if __name__ == "__main__":
     main() 
