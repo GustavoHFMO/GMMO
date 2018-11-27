@@ -106,7 +106,7 @@ class ClassificationEngine:
         '''
         self.TYPE = Type
         
-    def fit(self, x_sel, y_sel, P, k, old_ds):
+    def fit(self, x_sel, y_sel, P, k):
         '''
         metodo para chamar o tipo de DS
         :param: x_sel: dados de treinamento da janela de validacao
@@ -130,11 +130,8 @@ class ClassificationEngine:
             DS = APriori(P, k)
             
         # encontrando os classificadores competentes do DS escolhido
-        try:
-            self.DS = copy.deepcopy(DS)           
-            self.DS.fit(x_sel, y_sel)
-        except:
-            self.DS = copy.deepcopy(old_ds)
+        self.DS = copy.deepcopy(DS)           
+        self.DS.fit(x_sel, y_sel)
         
     def predict(self, x):
         '''
@@ -353,7 +350,10 @@ class Dynse(PREQUENTIAL_SUPER):
                 x_sel, y_sel = self.adjustingWindowOne(W)
                         
                 # ajustando o mecanismo de classificacao
-                self.CE.fit(x_sel, y_sel, P, self.K, self.CE.DS)
+                try:
+                    self.CE.fit(x_sel, y_sel, P, self.K)
+                except:
+                    print()
                 
                 # realizando a classificacao
                 y_pred = self.CE.predict(np.asarray([x]))
