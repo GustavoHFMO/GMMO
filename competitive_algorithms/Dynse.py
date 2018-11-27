@@ -134,7 +134,7 @@ class ClassificationEngine:
         try:           
             self.DS.fit(x_sel, y_sel)
         except:
-            continue
+            print()
         
     def predict(self, x):
         '''
