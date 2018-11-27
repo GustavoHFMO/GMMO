@@ -103,8 +103,7 @@ class KDNAGMM(GMM_SUPER):
             self.train_input, self.train_target = self.easyInstances(train_input, train_target, k, limiar)
             
             # receiving the number of classes
-            unique, ammount = np.unique(self.train_target, return_counts=True)
-            self.L = len(unique)
+            _, ammount = np.unique(self.train_target, return_counts=True)
             
             # condition of existence
             if(0 in ammount):
@@ -114,7 +113,7 @@ class KDNAGMM(GMM_SUPER):
             self.train_input, self.train_target = train_input, train_target
 
         # receiving the number of classes
-        unique, _ = np.unique(self.train_target, return_counts=True)
+        unique, ammount = np.unique(self.train_target, return_counts=True)
         self.L = len(unique)
             
         # dividing the patterns per class
@@ -125,7 +124,8 @@ class KDNAGMM(GMM_SUPER):
                 if(self.train_target[j] == i):
                     aux.append(self.train_input[j])
             classes.append(np.asarray(aux))
-            
+        classes = np.asarray(classes)
+        
         # variable to store the weight of each gaussian
         self.dens = []
         
@@ -135,18 +135,21 @@ class KDNAGMM(GMM_SUPER):
         # creating the optimal gaussians for each class
         for i in range(len(classes)):
             
-            # EM with BIC applied for each class
-            gmm = self.chooseBestModel(classes[i], type_selection, Kmax, restarts, iterations)
-        
-            # storing the gaussians            
-            for gaussian in gmm.gaussians:
-                gaussian.label = i 
-                self.gaussians.append(gaussian)
+            if(ammount[i] != 0):
+                # EM with BIC applied for each class
+                gmm = self.chooseBestModel(classes[i], type_selection, Kmax, restarts, iterations)
+            
+                # storing the gaussians            
+                for gaussian in gmm.gaussians:
+                    gaussian.label = i 
+                    self.gaussians.append(gaussian)
+                            
+                # storing the density of each gaussian
+                for k in gmm.dens:
+                    self.dens.append(k)
+            else:
+                continue
                         
-            # storing the density of each gaussian
-            for k in gmm.dens:
-                self.dens.append(k)
-                    
         # defining the number of gaussians for the problem
         self.K = len(self.gaussians)
         
