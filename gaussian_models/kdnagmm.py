@@ -101,13 +101,22 @@ class KDNAGMM(GMM_SUPER):
         # storing the patterns
         if(self.ruido):
             self.train_input, self.train_target = self.easyInstances(train_input, train_target, k, limiar)
+            
+            # receiving the number of classes
+            unique, ammount = np.unique(self.train_target, return_counts=True)
+            self.L = len(unique)
+            
+            # condition of existence
+            if(0 in ammount):
+                self.train_input, self.train_target = train_input, train_target
+            
         else:
             self.train_input, self.train_target = train_input, train_target
 
         # receiving the number of classes
         unique, _ = np.unique(self.train_target, return_counts=True)
         self.L = len(unique)
-        
+            
         # dividing the patterns per class
         classes = []
         for i in range(self.L):
@@ -116,7 +125,6 @@ class KDNAGMM(GMM_SUPER):
                 if(self.train_target[j] == i):
                     aux.append(self.train_input[j])
             classes.append(np.asarray(aux))
-            print(len(classes[i]))
             
         # variable to store the weight of each gaussian
         self.dens = []
