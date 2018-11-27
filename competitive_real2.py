@@ -100,7 +100,7 @@ for i in range(8, 9):
         xxx = 0
             
         #1. import the classifier
-        classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=True, kmax=1)
+        classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=True)
         
         #2. instantiate the detector
         detector = EWMA(min_instance=train_size, lt=lt)
@@ -126,7 +126,7 @@ for i in range(8, 9):
         xxx = 1
             
         #1. import the classifier
-        igmmcd = IGMMCD(0.5, 0.01, 13)
+        igmmcd = IGMMCD(0.5, 0.01, 5)
         
         #2. execute the prequential
         igmmcd.prequential(labels, stream_records, train_size)
