@@ -116,6 +116,7 @@ class KDNAGMM(GMM_SUPER):
                 if(self.train_target[j] == i):
                     aux.append(self.train_input[j])
             classes.append(np.asarray(aux))
+            print(len(classes[i]))
             
         # variable to store the weight of each gaussian
         self.dens = []
