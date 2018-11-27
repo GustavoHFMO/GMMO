@@ -105,7 +105,7 @@ class KDNAGMM(GMM_SUPER):
             self.train_input, self.train_target = train_input, train_target
 
         # receiving the number of classes
-        unique, _ = np.unique(train_target, return_counts=True)
+        unique, _ = np.unique(self.train_target, return_counts=True)
         self.L = len(unique)
         
         # dividing the patterns per class
