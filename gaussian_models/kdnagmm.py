@@ -141,7 +141,7 @@ class KDNAGMM(GMM_SUPER):
                     self.dens.append(k)
                     
             else:
-                pass    
+                continue    
         
         # defining the number of gaussians for the problem
         self.K = len(self.gaussians)
