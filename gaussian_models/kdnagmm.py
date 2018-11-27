@@ -140,7 +140,7 @@ class KDNAGMM(GMM_SUPER):
             print("quantidade: ", ammount)            
             print("quantidade: ", ammount[i])
             
-            if(len(classes) != 0):
+            if(ammount[i] != 0):
                 # EM with BIC applied for each class
                 gmm = self.chooseBestModel(classes[i], type_selection, Kmax, restarts, iterations)
             
