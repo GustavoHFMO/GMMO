@@ -130,8 +130,8 @@ class ClassificationEngine:
             DS = APriori(P, k)
             
         # encontrando os classificadores competentes do DS escolhido
-        self.DS = copy.deepcopy(DS) 
-        try:           
+        try:
+            self.DS = copy.deepcopy(DS)           
             self.DS.fit(x_sel, y_sel)
         except:
             print()
