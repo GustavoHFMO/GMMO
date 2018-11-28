@@ -78,7 +78,7 @@ for k in range(len(Kmax)):
     models.append(nome)
 
 
-for i in range(1, 2):
+for i in range(2, 4):
     
     for j in range(0, 10):
         
