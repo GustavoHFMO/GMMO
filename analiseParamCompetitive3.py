@@ -78,9 +78,9 @@ for k in range(len(Kmax)):
     models.append(nome)
 
 
-for i in range(2, 4):
+for i in range(1, 2):
     
-    for j in range(0, 10):
+    for j in range(7, 10):
         
         # choosing the dataset
         name, labels, stream_records = chooseDataset(i, j)
@@ -88,7 +88,7 @@ for i in range(2, 4):
         # table to store only the accuracy of models        
         if(j == 0):
             tb_accuracy = Tabela_excel()
-            tb_accuracy.Criar_tabela(nome_tabela=patch+name+'-accuracy', 
+            tb_accuracy.Criar_tabela(nome_tabela=patch+name+'-accuracy3', 
                                          folhas=['modelos'], 
                                          cabecalho=models, 
                                          largura_col=5000)
