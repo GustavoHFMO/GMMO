@@ -86,7 +86,7 @@ for i in range(1, 2):
         name, labels, stream_records = chooseDataset(i, j)
         
         # table to store only the accuracy of models        
-        if(j == 0):
+        if(j == 4):
             tb_accuracy = Tabela_excel()
             tb_accuracy.Criar_tabela(nome_tabela=patch+name+'-accuracy2', 
                                          folhas=['modelos'], 
