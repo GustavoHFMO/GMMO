@@ -86,11 +86,11 @@ for i in range(8, 9):
         # table to store only the accuracy of models        
         if(j == 0):
             tb_accuracy = Tabela_excel()
-            tb_accuracy.Criar_tabela(nome_tabela=patch+name+'-accuracy', 
+            tb_accuracy.Criar_tabela(nome_tabela=patch+name+'dynse-accuracy', 
                                          folhas=['modelos'], 
                                          cabecalho=models, 
                                          largura_col=5000)
-            
+        '''
         ################################################################################## 0 #######################################################
         # Proposed 
         xxx = 0
@@ -116,7 +116,7 @@ for i in range(8, 9):
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
         ############################################################################################################################################
-        
+        '''
         '''
         ################################################################################## 1 #######################################################
         # IGMM-CD
@@ -131,7 +131,8 @@ for i in range(8, 9):
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, igmmcd.returnPredictions(), igmmcd.returnTarget(), igmmcd.accuracyGeneral())
         ############################################################################################################################################
-    
+        '''
+        
         ################################################################################## 2 #######################################################
         # Dynse
         xxx = 2
@@ -162,4 +163,3 @@ for i in range(8, 9):
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, dynse.returnPredictions(), dynse.returnTarget(), dynse.accuracyGeneral())
         ############################################################################################################################################
-        '''
