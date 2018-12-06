@@ -91,7 +91,7 @@ for i in range(9, 10):
         # table to store only the accuracy of models        
         if(j == 0):
             tb_accuracy = Tabela_excel()
-            tb_accuracy.Criar_tabela(nome_tabela=patch+name+'dynse-accuracy', 
+            tb_accuracy.Criar_tabela(nome_tabela=patch+name+'-accuracy', 
                                          folhas=['modelos'], 
                                          cabecalho=models, 
                                          largura_col=5000)

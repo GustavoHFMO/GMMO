@@ -488,7 +488,7 @@ class IGMMCD(PREQUENTIAL_SUPER):
         for i, X in enumerate(self.STREAM):
             
             # to use the cross validation
-            if(self.cross_validation(i, qtd_folds, fold)):
+            if(self.cross_validation(i, fold, qtd_folds)):
                 
                 # receiving the patterns and the respective label
                 x, y = X[0:-1], int(X[-1])
