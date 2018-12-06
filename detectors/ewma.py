@@ -13,7 +13,7 @@ URL: https://arxiv.org/pdf/1212.6018.pdf
 import math
 
 class EWMA():
-    def __init__(self, min_instance=30, lambda_=0.2, lt=1):
+    def __init__(self, min_instance=30, lambda_=0.2, c=1, w=0.5):
         '''
         The Exponentially Weighted Moving Average (EWMA) drift detection method class.
         :param: min_instance: quantity of instance to start detect a concept drift
@@ -27,7 +27,8 @@ class EWMA():
         self.sigma_zt = 0.0
         self.z_t = 0.0
         self.lambda_ = lambda_
-        self.L_t = lt
+        self.L_t = c
+        self.w = w
 
     def run(self, prediction):
         '''
@@ -55,7 +56,7 @@ class EWMA():
 
         if self.z_t > self.sigma_xt + self.L_t * self.sigma_zt:
             drift_status = True
-        elif self.z_t > self.sigma_xt + 0.5 * self.L_t * self.sigma_zt:
+        elif self.z_t > self.sigma_xt + self.w * self.L_t * self.sigma_zt:
             warning_status = True
 
         return warning_status, drift_status
