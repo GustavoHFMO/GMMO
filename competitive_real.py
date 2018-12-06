@@ -14,6 +14,8 @@ from competitive_algorithms.Dynse import Dynse
 from sklearn.naive_bayes import GaussianNB
 import pandas as pd
 from table_generator.excel_table import Tabela_excel
+import numpy as np
+np.random.seed(0)
 
 def chooseDataset(number, variation):
     if(number==0):
