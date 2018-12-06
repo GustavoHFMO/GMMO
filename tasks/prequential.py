@@ -14,6 +14,7 @@ from gaussian_models.kdnagmm import KDNAGMM
 from sklearn.metrics import accuracy_score
 import pandas as pd
 import numpy as np
+np.random.seed(0)
 
 class Prequential(PREQUENTIAL_SUPER):
     def __init__(self, name, labels, stream, classifier, detector, strategy, window_size, batch_size=None):
@@ -40,6 +41,133 @@ class Prequential(PREQUENTIAL_SUPER):
         # variables to analyze the update
         self.error = []
         self.correction_error = []
+        
+        # variable to count the cross validation
+        self.count = 0
+    
+    def cross_validation(self, i, fold, qtd_folds):
+        '''
+        Method to use the cross validation to data streams
+        '''
+        
+        # if the current point reach the maximum, then is reseted 
+        if(self.count == qtd_folds):
+            self.count = 0
+            
+        # false if the fold is equal to count
+        if(self.count == fold):
+            Flag = False
+        else:
+            Flag = True
+        
+        # each iteration is accumuled an point
+        self.count += 1
+        
+        #returning the flag
+        return Flag
+        
+    def run_cross_validation(self, fold, qtd_folds):
+        '''
+        method to run the stream
+        '''
+        
+        # obtaining the initial window
+        W = self.STREAM[:self.WINDOW_SIZE]
+        
+        # instantiating a window for warning levels 
+        W_warning = []
+        
+        # instantiating the validation window
+        if(self.STRATEGY):
+            W_validation = W 
+        
+        # training the classifier
+        self.CLASSIFIER = self.trainClassifier(W)
+        
+        # fitting the detector
+        self.DETECTOR.fit(self.CLASSIFIER, W) 
+        
+        # for to operate into a stream
+        for i, X in enumerate(self.STREAM[self.WINDOW_SIZE:]):
+            
+            # to use the cross validation
+            if(self.cross_validation(i, qtd_folds, fold)):
+            
+                # split the current example on pattern and label
+                x, y = X[0:-1], int(X[-1])
+                
+                # using the classifier to predict the class of current label
+                yi = self.CLASSIFIER.predict(x)
+                
+                # storing the predictions
+                self.PREDICTIONS.append(yi)
+                self.TARGET.append(y)
+                
+                # activating the strategy
+                if(self.STRATEGY):
+                    
+                    # sliding the current observation into W
+                    W_validation = self.slidingWindow(W_validation, X)
+                    
+                    # updating the gaussian if the classifier miss
+                    new_pred = self.CLASSIFIER.strategy(y, yi, x, W_validation, i)
+                                        
+                    # storing the correction
+                    if(new_pred != None):
+                        self.error.append(y)
+                        self.correction_error.append(new_pred)
+                            
+                # verifying the claassifier
+                if(self.CLASSIFIER_READY):
+                    
+                    # sliding the current observation into W
+                    W = self.slidingWindow(W, X)
+                
+                    # monitoring the datastream
+                    warning_level, change_level = self.DETECTOR.detect(y, yi)
+                            
+                    # trigger the warning strategy
+                    if(warning_level):
+                        #print('warning level')
+                            
+                        # managing the window warning
+                        W_warning = self.manageWindowWarning(W_warning, X)
+                            
+                    # trigger the change strategy    
+                    if(change_level):
+                        #print('change level')
+                            
+                        # storing the time of change
+                        self.DETECTIONS.append(i)
+                        
+                        # reseting the detector
+                        self.DETECTOR.reset()
+                            
+                        # reseting the window
+                        W = self.transferKnowledgeWindow(W, W_warning)
+                            
+                        # reseting the classifier 
+                        self.CLASSIFIER_READY = False
+                        
+                
+                elif(self.WINDOW_SIZE > len(W)):
+                    
+                    # sliding the current observation into W
+                    W = self.incrementWindow(W, X)
+                
+                else:
+                    
+                    # training the classifier
+                    self.CLASSIFIER = self.trainClassifier(W)
+                    
+                    # fitting the detector
+                    self.DETECTOR.fit(self.CLASSIFIER, W) 
+                            
+                    # releasing the new classifier
+                    self.CLASSIFIER_READY = True
+               
+                # print the current process
+                self.printIterative(i)
     
     def run(self):
         '''
@@ -58,6 +186,7 @@ class Prequential(PREQUENTIAL_SUPER):
         
         # training the classifier
         self.CLASSIFIER = self.trainClassifier(W)
+        #self.CLASSIFIER.plotGmm(0, show=True)
         
         # fitting the detector
         self.DETECTOR.fit(self.CLASSIFIER, W) 
@@ -277,21 +406,27 @@ class Prequential(PREQUENTIAL_SUPER):
     
 def main():
     
-    i = 3
-    dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes']
-    
     #1. import the stream
-    labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+"/"+dataset[i]+"_"+str(0)+".arff")
-    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/virtual_5changes.arff")
-    #labels, _, stream_records = ARFFReader.read("../data_streams/Dynse/SEA.arff")
-
+    #===========================================================================
+    # i = 3
+    # dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes', 'SEA', 'SEARec']
+    # labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+"/"+dataset[i]+"_"+str(0)+".arff")
+    #===========================================================================
+    
+    #===========================================================================
+    i = 3
+    dataset = ['powersupply', 'PAKDD', 'elec', 'noaa']
+    labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
+    stream_records = stream_records[:500]
+    #===========================================================================
+    
     #2. import the classifier
-    classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=True)
+    classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=True, kmax=4)
     
     #3. import the detector
     #nodetector = noDetector()
-    m = 50
-    detector = EWMA(min_instance=m, lt=1)
+    m = 100
+    detector = EWMA(min_instance=m, c=3, w=1.5)
     #detector = noDetector()
     
     #4. instantiate the prequetial
@@ -304,7 +439,12 @@ def main():
                        window_size=m)
     
     #5. execute the prequential
-    preq.run()
+    #preq.run()
+    #preq.run()
+    preq.run_cross_validation(2, 5)
+    
+    # printando a acuracia final do sistema
+    print(preq.accuracyGeneral())
     
     # storing only the predictions
     df = pd.DataFrame(data={'predictions': preq.PREDICTIONS})
