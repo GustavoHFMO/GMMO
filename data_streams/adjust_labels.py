@@ -36,6 +36,8 @@ class Adjust_labels:
             index = [0 if i == 'p' else 1 if i == 'n' else i for i in data[:, -1]]
         elif(labels == ['1', '2']):
             index = [0 if int(i) == 2 else int(i) for i in data[:, -1]]
+        else:
+            index = data[:, -1]
             
         index = np.asarray(index)
         return index.astype(int)
@@ -48,18 +50,18 @@ class Adjust_labels:
         :return: stream corrigido
         '''
         
-        # transformando em array
+        # transforming into array
         data = np.asarray(data)
         
         # receiving the adjusted label
         index = self.targetStream(labels, data)
-        
-        # passando os novos labels para o stream
+        # passing the new labels to the stream
         for i in range(len(index)):
             data[i, -1] = index[i]
+        
         data = np.asarray(data, dtype='float')
     
-        # retornando o stream
+        # returning the stream
         return data
      
     

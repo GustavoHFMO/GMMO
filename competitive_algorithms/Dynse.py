@@ -163,7 +163,10 @@ class Dynse(PREQUENTIAL_SUPER):
         self.PREDICTIONS = []
         self.TARGET = []
         self.NAME = "Dynse-"+self.CE.TYPE+"-"+self.PE.TYPE
-    
+
+        # variable to count the cross validation
+        self.count = 0
+        
     def adjustingWindowBatch(self, W):
         '''
         metodo para ajustar a janela de validacao
@@ -311,7 +314,7 @@ class Dynse(PREQUENTIAL_SUPER):
             # printando a execucao
             self.printIterative(i)
     
-    def prequential(self, labels, stream, window_size, train_size):
+    def prequential(self, labels, stream, train_size, window_size):
         '''
         metodo para executar o codigo
         :param: labels: rotulos existentes no stream
@@ -364,8 +367,9 @@ class Dynse(PREQUENTIAL_SUPER):
                 y_pred = self.CE.predict(np.asarray([x]))
                     
                 # salvando a previsao e o alvo
-                self.PREDICTIONS.append(y_pred[0])
-                self.TARGET.append(y)
+                if(i >= window_size):
+                    self.PREDICTIONS.append(y_pred[0])
+                    self.TARGET.append(y)
                 
                 # training a new classifier
                 if(len(L) > train_size):
@@ -389,12 +393,118 @@ class Dynse(PREQUENTIAL_SUPER):
                 
             # printando a execucao
             self.printIterative(i)
+    
+    def prequential_cross_validation(self, labels, stream, train_size, window_size, fold, qtd_folds):
+        '''
+        metodo para executar o codigo
+        :param: labels: rotulos existentes no stream
+        :param: stream: fluxo de dados
+        :param: batch_size: tamanho dos batches
+        '''
+
+        # salvando o stream e o tamanho do batch
+        self.STREAM = al.adjustStream(labels, stream)
+        
+        # janela inicial
+        W = []
+        
+        # pool inicial de classificadores
+        P = []
+    
+        # variable to store patterns for train
+        L = []
+        
+        # for para percorrer a stream
+        for i, X in enumerate(self.STREAM):
+
+            # to use the cross validation
+            if(self.cross_validation(i, fold, qtd_folds)):
                 
+                # split the current example on pattern and label
+                x, y = X[0:-1], int(X[-1])
+                                
+                # storing the patterns
+                L.append(X)
+                
+                # working to fill the window
+                W.append(X)
+                    
+                # working with full window
+                if(i >= train_size):
+                    
+                    # ajustando a janela de validacao
+                    x_sel, y_sel = self.adjustingWindowOne(W)
+                            
+                    try:
+                        # ajustando o mecanismo de classificacao
+                        self.CE.fit(x_sel, y_sel, P, self.K)
+                    except:
+                        # to avoid problems with deslib
+                        unique = np.unique(y_sel)
+                        labels = np.unique(self.STREAM[:,-1])
+                        index = [i for i in labels if(i not in unique)] 
+                        y_sel[0] = index[0]
+                        self.CE.fit(x_sel, y_sel, P, self.K)
+                    
+                    # realizando a classificacao
+                    y_pred = self.CE.predict(np.asarray([x]))
+                        
+                    # salvando a previsao e o alvo
+                    if(i >= window_size):
+                        self.PREDICTIONS.append(y_pred[0])
+                        self.TARGET.append(y)
+                    
+                    # training a new classifier
+                    if(len(L) > train_size):
+                        # treinando um classificador 
+                        C = self.trainNewClassifier(self.BC, np.asarray(L))
+                        # erasing patterns
+                        L = []
+                        # podando o numero de classificadores
+                        P = self.PE.prunning(P, W, C, self.D)
+                            
+                    # removendo o batch mais antigo 
+                    self.removeOldestBatch(W)
+                    
+                else:
+                    # treinando um classificador 
+                    C = self.trainNewClassifier(self.BC, np.asarray(L))
+                    # erasing patterns
+                    L = []
+                    # podando o numero de classificadores
+                    P = self.PE.prunning(P, W, C, self.D)    
+                    
+                # printando a execucao
+                self.printIterative(i)
+            
+    def cross_validation(self, i, fold, qtd_folds):
+        '''
+        Method to use the cross validation to data streams
+        '''
+        
+        # if the current point reach the maximum, then is reseted 
+        if(self.count == qtd_folds):
+            self.count = 0
+            
+        # false if the fold is equal to count
+        if(self.count == fold):
+            Flag = False
+        else:
+            Flag = True
+        
+        # each iteration is accumuled an point
+        self.count += 1
+        
+        #returning the flag
+        return Flag
+         
 def main():
     
     # definindo o dataset
-    i = 0
-    datasets = ['SEA', 'SEARec', 'STAGGER']
+    #===========================================================================
+    # i = 0
+    # datasets = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes', 'SEA', 'SEARec']
+    #===========================================================================
     
     # definindo o mecanismo de classificacao
     j = 5
@@ -405,11 +515,12 @@ def main():
     pruning = ['age', 'accuracy']
     
     #1. importando o dataset
-    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/circles.arff")
-    #labels, _, stream_records = ARFFReader.read("../data_streams/Dynse/"+datasets[i]+".arff")
-    #labels, _, stream_records = ARFFReader.read("../data_streams/real/PAKDD.arff")
-    labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/circles/circles_"+str(0)+".arff")
+    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+datasets[i]+"/"+datasets[i]+"_"+str(0)+".arff")
     
+    i = 3
+    dataset = ['powersupply', 'PAKDD', 'elec', 'noaa']
+    labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
+    stream_records = stream_records[:500]
     
     #2. instanciando o mecanismo de classificacao
     ce = ClassificationEngine(engines[j])
@@ -438,9 +549,11 @@ def main():
     # printando a acuracia final do sistema
     print(dynse.accuracyGeneral())
     
-    # salvando a predicao do sistema
-    df = pd.DataFrame(data={'predictions': dynse.PREDICTIONS})
-    df.to_csv("../projects/"+dynse.NAME+"-"+datasets[i]+".csv")
+    #===========================================================================
+    # # salvando a predicao do sistema
+    # df = pd.DataFrame(data={'predictions': dynse.PREDICTIONS})
+    # df.to_csv("../projects/"+dynse.NAME+"-"+datasets[i]+".csv")
+    #===========================================================================
         
 if __name__ == "__main__":
     main()        

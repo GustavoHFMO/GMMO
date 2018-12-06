@@ -92,6 +92,9 @@ class IGMMCD(PREQUENTIAL_SUPER):
         self.mix = []
         self.sp = []
         self.NAME = 'IGMM-CD'
+        
+        # variable to count the cross validation
+        self.count = 0
 
     def fit(self, x, y):
         '''
@@ -233,7 +236,6 @@ class IGMMCD(PREQUENTIAL_SUPER):
         for i in range(len(self.gaussians)):
             self.mix[i] = self.sp[i]/dens
             
-        
     def verifyComponents(self, x, y_true, y_pred):
         '''
         method to verify if there are any component that represent the variable x
@@ -463,29 +465,96 @@ class IGMMCD(PREQUENTIAL_SUPER):
             # removing the components            
             self.removeComponents()
             
-            # plotting
-            #self.train_input.append(x)
-            #self.train_target.append(y)
-            #self.plotGmm(self, i) 
+    def prequential_cross_validation(self, labels, stream, window_size, fold, qtd_folds):
+        '''
+        method to run the IGMM-CD on a specific stream
+        :param: labels: existing labels on datastream
+        :param: stream: data that will be runned
+        '''
+        
+        self.STREAM = al.adjustStream(labels, stream)
+        
+        # first observation
+        x, y = self.STREAM[0][:-1], self.STREAM[0][-1]
+    
+        # starting the model    
+        self.fit(x, y)
+        
+        # variable to store the predictions and error
+        self.PREDICTIONS = []
+        self.TARGET = []
+        
+        # data stream
+        for i, X in enumerate(self.STREAM):
             
+            # to use the cross validation
+            if(self.cross_validation(i, qtd_folds, fold)):
+                
+                # receiving the patterns and the respective label
+                x, y = X[0:-1], int(X[-1])
+                
+                # predicting the class of the observation
+                y_pred = self.predict(x) 
+    
+                # storing the predictions            
+                if(i >= window_size):
+                    self.PREDICTIONS.append(y_pred)
+                    self.TARGET.append(y)
+                    # print the current process
+                    self.printIterative(i)
+                                
+                # verifying the components
+                self.verifyComponents(x, y, y_pred)
+                
+                # removing the components            
+                self.removeComponents()
+    
+    def cross_validation(self, i, fold, qtd_folds):
+        '''
+        Method to use the cross validation to data streams
+        '''
+        
+        # if the current point reach the maximum, then is reseted 
+        if(self.count == qtd_folds):
+            self.count = 0
+            
+        # false if the fold is equal to count
+        if(self.count == fold):
+            Flag = False
+        else:
+            Flag = True
+        
+        # each iteration is accumuled an point
+        self.count += 1
+        
+        #returning the flag
+        return Flag
+        
 def main():
     
-    i = 4
-    dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes']
+    #===========================================================================
+    # #1. import the stream
+    # i = 0
+    # dataset = ['circles', 'sine1', 'sine2', 'virtual_5changes', 'virtual_9changes']
+    # labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+"/"+dataset[i]+"_"+str(0)+".arff")
+    #===========================================================================
     
-    #1. import the stream
-    #labels, _, stream_records = ARFFReader.read("../data_streams/_synthetic/"+dataset[i]+"/"+dataset[i]+"_"+str(0)+".arff")
-    labels, _, stream_records = ARFFReader.read("../data_streams/real/PAKDD.arff")
+    i = 3
+    dataset = ['powersupply', 'PAKDD', 'elec', 'noaa']
+    labels, _, stream_records = ARFFReader.read("../data_streams/real/"+dataset[i]+".arff")
+    stream_records = stream_records[:500]
     
-    igmmcd = IGMMCD(0.5, 0.01, 13)
+    igmmcd = IGMMCD(10, 0.01, 9)
     igmmcd.prequential(labels, stream_records, 50)
     
     # printing the final accuracy
     print(igmmcd.accuracyGeneral())
     
-    # storing only the predictions
-    df = pd.DataFrame(data={'predictions': igmmcd.PREDICTIONS})
-    df.to_csv("../projects/"+igmmcd.NAME+"-"+dataset[i]+".csv")
+    #===========================================================================
+    # # storing only the predictions
+    # df = pd.DataFrame(data={'predictions': igmmcd.PREDICTIONS})
+    # df.to_csv("../projects/"+igmmcd.NAME+"-"+dataset[i]+".csv")
+    #===========================================================================
     
 if __name__ == "__main__":
     main()        

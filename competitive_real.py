@@ -43,14 +43,18 @@ def chooseDataset(number, variation):
     elif(number==6):
         labels, _, stream_records = ARFFReader.read("data_streams/_synthetic/SEARec/SEARec_"+str(variation)+".arff")
         name = 'SEARec'
-        
+    
     elif(number==7):
-        labels, _, stream_records = ARFFReader.read("data_streams/real/PAKDD.arff")
-        name = 'PAKDD'
-        
+        labels, _, stream_records = ARFFReader.read("data_streams/real/noaa.arff")
+        name = 'noaa'
+            
     elif(number==8):
         labels, _, stream_records = ARFFReader.read("data_streams/real/elec.arff")
         name = 'elec'
+        
+    elif(number==9):
+        labels, _, stream_records = ARFFReader.read("data_streams/real/PAKDD.arff")
+        name = 'PAKDD'
     
     print(name)
     return name, labels, stream_records
@@ -72,13 +76,14 @@ def saveInformation(i, xxx, models, name, tb_accuracy, predictions, target, accu
 models = ['Proposed Method', 'IGMM-CD', 'Dynse-priori']
 
 window_size = 100
+executions = 30
 
 # parameters
 patch = "projects/competitive_real/"
 
-for i in range(7, 9):
+for i in range(7, 10):
     
-    for j in range(10):
+    for j in range(executions):
         
         # choosing the dataset
         name, labels, stream_records = chooseDataset(i, j)
@@ -90,16 +95,16 @@ for i in range(7, 9):
                                          folhas=['modelos'], 
                                          cabecalho=models, 
                                          largura_col=5000)
-        '''
+
         ################################################################################## 0 #######################################################
         # Proposed 
         xxx = 0
             
         #1. import the classifier
-        classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=True, kmax=2)
+        classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=True, kmax=4)
         
         #2. instantiate the detector
-        detector = EWMA(min_instance=window_size, lt=1)
+        detector = EWMA(min_instance=window_size, c=3, w=1.5)
         
         #3. instantiate the prequetial
         g = Prequential(name=models[xxx],
@@ -111,13 +116,12 @@ for i in range(7, 9):
                         window_size=window_size)
         
         #4. execute the prequential
-        g.run()
+        g.run_cross_validation(j, executions)
         
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, g.returnPredictions(), g.returnTarget(), g.accuracyGeneral())
         ############################################################################################################################################
-        '''
-        '''
+
         ################################################################################## 1 #######################################################
         # IGMM-CD
         xxx = 1
@@ -126,12 +130,12 @@ for i in range(7, 9):
         igmmcd = IGMMCD(10, 0.01, 9)
         
         #2. execute the prequential
-        igmmcd.prequential(labels, stream_records, window_size)
+        igmmcd.prequential_cross_validation(labels, stream_records, window_size, j, executions)
         
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, igmmcd.returnPredictions(), igmmcd.returnTarget(), igmmcd.accuracyGeneral())
         ############################################################################################################################################
-        '''
+
         ################################################################################## 2 #######################################################
         # Dynse
         xxx = 2
@@ -154,10 +158,12 @@ for i in range(7, 9):
                       BC=bc)
          
         #5. executando o framework
-        dynse.prequential(labels=labels, 
+        dynse.prequential_cross_validation(labels=labels, 
                           stream=stream_records,
                           train_size=50,
-                          window_size=window_size)
+                          window_size=window_size,
+                          fold=j,
+                          qtd_folds=executions)
         
         #5. storing the information
         saveInformation(j, xxx, models, name, tb_accuracy, dynse.returnPredictions(), dynse.returnTarget(), dynse.accuracyGeneral())
