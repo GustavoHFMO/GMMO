@@ -115,6 +115,7 @@ class KDNAGMM(GMM_SUPER):
         # receiving the number of classes
         unique, ammount = np.unique(self.train_target, return_counts=True)
         self.L = len(unique)
+        self.unique = unique
             
         # dividing the patterns per class
         classes = []
@@ -202,11 +203,14 @@ class KDNAGMM(GMM_SUPER):
             if(flag):
                 # update the nearest gaussian
                 self.updateGaussianIncremental(x, gaussian)
-
+                
             else:
                 if(self.adicao):
                     # create a new gaussian
+                    
+                    #self.plotGmmNewObservation(i, x, show=True)
                     self.createGaussian(x, y_true)
+                    #self.plotGmmNewObservation(i, x, show=True)
 
             if(self.remocao):
                 # gmm maintenance
@@ -432,7 +436,8 @@ def main():
     print('test accuracy: %.1f' % test_accuracy)
     
     # plotting the gmm created
-    gmm.plotGmmTrainTest(gmm, train_accuracy, test_accuracy)
+    #gmm.plotGmmTrainTest(gmm, train_accuracy, test_accuracy)
+    gmm.plotGmm(0, show=True)
     ############################################################################################
     
 if __name__ == "__main__":

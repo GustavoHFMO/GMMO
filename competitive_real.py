@@ -14,8 +14,6 @@ from competitive_algorithms.Dynse import Dynse
 from sklearn.naive_bayes import GaussianNB
 import pandas as pd
 from table_generator.excel_table import Tabela_excel
-import numpy as np
-np.random.seed(0)
 
 def chooseDataset(number, variation):
     if(number==0):
@@ -106,7 +104,7 @@ for i in range(7, 10):
         classifier = KDNAGMM(ruido=True, remocao=True, adicao=True, erro=True, kmax=4)
         
         #2. instantiate the detector
-        detector = EWMA(min_instance=window_size, c=3, w=1.5)
+        detector = EWMA(min_instance=window_size, c=1, w=0.5)
         
         #3. instantiate the prequetial
         g = Prequential(name=models[xxx],

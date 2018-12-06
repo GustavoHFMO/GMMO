@@ -298,7 +298,7 @@ class GMM_SUPER:
     def plotGmm(self, t, show=True):
         
         # defining the colors of each gaussian
-        colors = cm.rainbow(np.linspace(0, 1, self.L))
+        colors = cm.rainbow(np.linspace(0, 1, len(self.unique)))
         marks = ["^", "o", '+', ',']
         
         # creating the image
@@ -306,20 +306,20 @@ class GMM_SUPER:
             
         # receiving each observation per class
         classes = []
-        for i in range(self.L):
+        for i in self.unique:
             aux = []
             for j in range(len(self.train_target)):
                 if(self.train_target[j] == i):
                     aux.append(self.train_input[j])
             classes.append(np.asarray(aux))
-                
-        # plotting each class
         classes = np.asarray(classes)
+        
+        # plotting each class
         for i in range(self.L):
             plt.scatter(classes[i][:,0],
                         classes[i][:,1],
                         color = colors[i],
-                        #marker = marks[i],
+                        marker = marks[i],
                         label = 'class '+str(i)) 
             
         # plotting the gaussians under the dataset
@@ -327,7 +327,54 @@ class GMM_SUPER:
             c = colors[self.gaussians[i].label]
 
             # plotting the number of gaussian
-            plt.text(self.gaussians[i].mu[0], self.gaussians[i].mu[1], "Gaussian ["+str(i)+ "]")
+            plt.text(self.gaussians[i].mu[0], self.gaussians[i].mu[1], "G"+str(i), weight='bold')
+                                
+            # plotting the gaussian
+            self.draw_ellipse(self.gaussians[i].mu, self.gaussians[i].sigma, c)
+            
+        # definindo o titulo e mostrando a imagem
+        plt.title('GMM - time: ' +str(t))
+        plt.legend()
+        if(show):
+            plt.show()
+    
+    def plotGmmNewObservation(self, t, x, show=True):
+        
+        # defining the colors of each gaussian
+        colors = cm.rainbow(np.linspace(0, 1, len(self.unique)))
+        marks = ["^", "o", '+', ',']
+        
+        # creating the image
+        plt.subplot(111)
+            
+        # receiving each observation per class
+        classes = []
+        for i in self.unique:
+            aux = []
+            for j in range(len(self.train_target)):
+                if(self.train_target[j] == i):
+                    aux.append(self.train_input[j])
+            classes.append(np.asarray(aux))
+        classes = np.asarray(classes)
+        
+        # plotting each class
+        for i in range(self.L):
+            plt.scatter(classes[i][:,0],
+                        classes[i][:,1],
+                        color = colors[i],
+                        marker = marks[i],
+                        label = 'class '+str(i)) 
+            
+        
+        # plotting the new observation
+        plt.scatter(x[0], x[1], s=100, marker='*', color='Yellow', zorder=10)
+            
+        # plotting the gaussians under the dataset
+        for i in range(len(self.gaussians)):
+            c = colors[self.gaussians[i].label]
+
+            # plotting the number of gaussian
+            plt.text(self.gaussians[i].mu[0], self.gaussians[i].mu[1], "G"+str(i), weight='bold')
                                 
             # plotting the gaussian
             self.draw_ellipse(self.gaussians[i].mu, self.gaussians[i].sigma, c)
@@ -437,6 +484,7 @@ class GMM_SUPER:
                                          angle, 
                                          #fill=False,
                                          color = color,
+                                         linewidth=3,
                                          alpha=0.3, 
                                          **kwargs))
             

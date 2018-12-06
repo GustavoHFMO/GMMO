@@ -8,7 +8,7 @@
 @attribute attributef real
 @attribute attributeg real
 @attribute attributeh real
-@attribute class {0,1,2}
+@attribute class {1,2}
 
 @data
 19.8,14,1019.6,8.4,9.9,15.9,28.9,14,1
