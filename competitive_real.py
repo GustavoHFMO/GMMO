@@ -75,7 +75,7 @@ def saveInformation(i, xxx, models, name, tb_accuracy, predictions, target, accu
 # models name
 models = ['Proposed Method', 'IGMM-CD', 'Dynse-priori']
 
-window_size = 100
+window_size = 200
 executions = 30
 
 # parameters
