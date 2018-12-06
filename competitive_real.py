@@ -81,7 +81,7 @@ executions = 30
 # parameters
 patch = "projects/competitive_real/"
 
-for i in range(7, 10):
+for i in range(7, 9):
     
     for j in range(executions):
         
